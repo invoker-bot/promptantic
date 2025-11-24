@@ -132,9 +132,7 @@ class CounterHandler(BaseHandler[Counter[T]]):
         Format: "key1:count1,key2:count2"
         """
         session: PromptSession[Any] = PromptSession()
-        default_str = (
-            ",".join(f"{k}:{v}" for k, v in default.items()) if default else None
-        )
+        default_str = ",".join(f"{k}:{v}" for k, v in default.items()) if default else None
 
         while True:
             try:

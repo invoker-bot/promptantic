@@ -49,9 +49,7 @@ class StrHandler(BaseHandler[str]):
         completer = FieldCompleter(completions) if completions else None
 
         session: PromptSession[Any] = PromptSession(completer=completer)
-        default_str = (
-            None if default is PydanticUndefined else self.format_default(default)
-        )
+        default_str = None if default is PydanticUndefined else self.format_default(default)
 
         return await session.prompt_async(
             create_field_prompt(field_name, description, default=default_str),

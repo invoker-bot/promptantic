@@ -202,11 +202,7 @@ class TupleHandler(BaseHandler[tuple[Any, ...]]):
                 item_handler = self.generator.get_handler(item_type)
                 # Create a type-specific description
                 type_name = getattr(item_type, "__name__", str(item_type))
-                item_desc = (
-                    f"{description} ({type_name})"
-                    if description
-                    else f"Enter {type_name}"
-                )
+                item_desc = f"{description} ({type_name})" if description else f"Enter {type_name}"
 
                 while True:
                     try:

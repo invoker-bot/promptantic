@@ -169,8 +169,7 @@ class UUIDHandler(BaseHandler):
                 result = await session.prompt_async(
                     create_field_prompt(
                         field_name,
-                        description
-                        or "Enter UUID (e.g. 123e4567-e89b-12d3-a456-426614174000)",
+                        description or "Enter UUID (e.g. 123e4567-e89b-12d3-a456-426614174000)",
                         default=default_str,
                     ),
                     default=default_str if default_str is not None else "",

@@ -128,9 +128,7 @@ class ImportStringCompleter(Completer):
 
                     module = import_module(name)
                     self._modules.update(
-                        f"{name}.{submod}"
-                        for submod in dir(module)
-                        if not submod.startswith("_")
+                        f"{name}.{submod}" for submod in dir(module) if not submod.startswith("_")
                     )
                 except ImportError:
                     pass

@@ -53,24 +53,16 @@ class ConstrainedStrHandler(BaseHandler):
 
             try:
                 # Validate length constraints
-                if (
-                    field_type.min_length is not None
-                    and len(result) < field_type.min_length
-                ):
+                if field_type.min_length is not None and len(result) < field_type.min_length:
                     msg = f"String too short (min: {field_type.min_length})"
                     raise ValueError(msg)  # noqa: TRY301
 
-                if (
-                    field_type.max_length is not None
-                    and len(result) > field_type.max_length
-                ):
+                if field_type.max_length is not None and len(result) > field_type.max_length:
                     msg = f"String too long (max: {field_type.max_length})"
                     raise ValueError(msg)  # noqa: TRY301
 
                 # Validate pattern
-                if field_type.pattern is not None and not re.match(
-                    field_type.pattern, result
-                ):
+                if field_type.pattern is not None and not re.match(field_type.pattern, result):
                     msg = f"String does not match pattern: {field_type.pattern}"
                     raise ValueError(msg)  # noqa: TRY301
 
@@ -119,9 +111,7 @@ class ConstrainedIntHandler(BaseHandler[int]):
         # Build constraint description
         constraints = self.format_constraints(field_type)
         full_desc = (
-            f"{description or ''}\nConstraints: {constraints}"
-            if constraints
-            else description
+            f"{description or ''}\nConstraints: {constraints}" if constraints else description
         )
 
         session: PromptSession[Any] = PromptSession()
