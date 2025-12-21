@@ -13,12 +13,12 @@ from pathlib import Path
 import re
 import sys
 import types
-from typing import TYPE_CHECKING, Any, TypeVar, get_origin, overload
+from typing import TYPE_CHECKING, Annotated, Any, TypeVar, get_origin, overload
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
 from prompt_toolkit.styles import merge_styles
-from pydantic import BaseModel, SecretStr, ValidationError
+from pydantic import BaseModel, SecretStr, TypeAdapter, ValidationError
 from pydantic_core import PydanticUndefined
 
 from promptantic.exceptions import NoHandlerError, ValidationError as PromptanticValidationError
@@ -81,6 +81,28 @@ from promptantic.ui.style import DEFAULT_STYLE
 
 
 M = TypeVar("M", bound=BaseModel)
+
+
+def validate_field(model_cls: type[BaseModel], field_name: str, value: Any) -> Any:
+    """Validate a single field value against model field constraints.
+
+    Args:
+        model_cls: The Pydantic model class.
+        field_name: The name of the field to validate.
+        value: The value to validate.
+
+    Returns:
+        The validated (and possibly coerced) value.
+
+    Raises:
+        ValidationError: If the value fails validation.
+    """
+    field_info = model_cls.model_fields[field_name]
+    field_type = field_info.annotation
+    # Reconstruct full type with metadata (Field constraints, Annotated validators, etc.)
+    if field_info.metadata:
+        field_type = Annotated[(field_type, *field_info.metadata)]
+    return TypeAdapter(field_type).validate_python(value)
 
 
 if TYPE_CHECKING:
@@ -324,6 +346,8 @@ class ModelGenerator:
                             field_info=field,
                             _test_mode=_test_mode,
                         )
+                        # Validate field value against model constraints
+                        value = validate_field(model_cls, name, value)
                         values[name] = value
                         break
                     except (ValidationError, PromptanticValidationError) as e:
