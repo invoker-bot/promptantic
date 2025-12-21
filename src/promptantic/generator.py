@@ -290,14 +290,14 @@ class ModelGenerator:
 
         try:
             for name, field in model_cls.model_fields.items():
+                # Get default value
+                field_default = field.get_default(call_default_factory=True, validated_data=values)
+                if field_default in (PydanticUndefined, Ellipsis):
+                    field_default = None
                 # Skip fields marked with skip_prompt
                 if is_skip_prompt(field):
-                    # Use default if available
-                    if field.default not in (None, PydanticUndefined):
-                        values[name] = field.default
-                    # Use default_factory if available
-                    elif field.default_factory is not None:
-                        values[name] = field.default_factory()  # type: ignore
+                    if field_default is not None:
+                        values[name] = field_default
                     continue
                 current += 1
                 if self.show_progress:
@@ -312,7 +312,7 @@ class ModelGenerator:
                 description = field.description
 
                 # Use instance value as default if it was set, otherwise use field default
-                field_default = defaults.get(name, field.default)
+                field_default = defaults.get(name, field_default)
 
                 while True:
                     try:
