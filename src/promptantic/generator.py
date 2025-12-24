@@ -33,7 +33,15 @@ from promptantic.handlers.date_time import (
 from promptantic.handlers.enums import EnumHandler
 from promptantic.handlers.literal import LiteralHandler
 from promptantic.handlers.models import ModelHandler
-from promptantic.handlers.network import IPv4Handler, IPv6Handler, NetworkHandler
+from promptantic.handlers.network import (
+    IPv4Handler,
+    IPv6Handler,
+    NetworkHandler,
+    UrlHandler,
+    DsnHandler,
+    URL_TYPES,
+    DSN_TYPES,
+)
 from promptantic.handlers.primitives import (
     BoolHandler,
     DecimalHandler,
@@ -164,6 +172,14 @@ class ModelGenerator:
         self.register_handler(ipaddress.IPv6Address, IPv6Handler(self))
         self.register_handler(ipaddress.IPv4Network, NetworkHandler(self))
         self.register_handler(ipaddress.IPv6Network, NetworkHandler(self))
+
+        # Pydantic URL types (AnyUrl, HttpUrl, etc.)
+        for url_type in URL_TYPES:
+            self.register_handler(url_type, UrlHandler(self, url_type))
+
+        # Pydantic DSN types (PostgresDsn, MySQLDsn, etc.)
+        for dsn_type in DSN_TYPES:
+            self.register_handler(dsn_type, DsnHandler(self, dsn_type))
 
         # DateTime types
         self.register_handler(datetime.date, DateHandler(self))
